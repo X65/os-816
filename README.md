@@ -57,6 +57,13 @@ During switch handler check whether task has screen registered (video/attr/dl me
 Screens are hardcoded to a task. Task can have 0 or 1 screen. Cannot have more.
 Can change video/attr/dl address freely and it will be remembered on next VT switch.
 
+## Memory management
+
+The rest (223) of memory banks (32-254) are free to use for applications.
+The task wanting to assume a bank, can request a free bank from OS and be given a number of bank to use exclusively, or 255 (-1) on failure (no more free banks).
+The application then can store data (using data bank register) or code (for use by program bank register) in given bank.
+It is up to the application to track its own task-id and given data banks numbers. The OS does not provide bookkeeping. Good idea may be to use some global variables in task's direct page.
+
 ## Device naming
 
 - one letter codes for the device
