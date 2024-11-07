@@ -1,7 +1,14 @@
 .include "ria.inc"
 
+.export hello_world
+
+.P816
+.A8
+.I8
+
 .org    $0200
 
+hello_world:
         ldx #$00        ; X = 0
 loop:   bit RIA_UARTS   ; N = ready to send
         bpl loop        ; If N = 0 goto loop
