@@ -47,3 +47,9 @@ IRQ_HDL:
 .word NMI_HDL   ; NMIB     6502 ector.
 .word RESET     ; RESETB   6502 vector.
 .word IRQ_HDL   ; IRQB/BRK 6502 vector.
+
+; Create a block of data intended to load into F000 memory area.
+; This is special, as it does not load into memory, but serves as a description
+; of the file for the "INFO" monitor command.
+.segment "INFO"
+.asciiz "OS/816 for X65"
