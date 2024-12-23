@@ -39,7 +39,7 @@ IRQ_HDL:
 .word BRK_HDL   ; BRK    65816 vector.
 .word ABORT_HDL ; ABORTB 65816 vector.
 .word NMI_HDL   ; NMIB   65816 vector.
-.word $0000     ;
+.res 2          ;
 .word IRQ_HDL   ; IRQB   65816 vector.
 
 .segment "VEC02"
