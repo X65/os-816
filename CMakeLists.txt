@@ -16,3 +16,5 @@ target_sources(${executable_name} PRIVATE
    src/boot.s
    src/hello.s
 )
+
+install(TARGETS ${executable_name})
