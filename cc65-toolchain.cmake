@@ -18,7 +18,7 @@ macro( __compilerCc65 lang )
     set( CMAKE_${lang}_COMPILER_ID_WORKS TRUE )
     set( CMAKE_${lang}_COMPILER_ID_FORCED TRUE )
 
-    set( CMAKE_DEPFILE_FLAGS_${lang} "--create-dep <DEP_FILE> --listing <DEP_TARGET>.lst")
+    set( CMAKE_DEPFILE_FLAGS_${lang} "--create-dep <DEP_FILE>")
     set( CMAKE_${lang}_VERBOSE_FLAG "-v" )
     set( CMAKE_${lang}_FLAGS_DEBUG_INIT "-g -D DEBUG --asm-define DEBUG --target none"  )
 endmacro()
