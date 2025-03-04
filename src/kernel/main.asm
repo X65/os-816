@@ -1,12 +1,12 @@
 .export kernel_start
 
-.import task_init,CURRENT_TASK,task00,task01,task02
-.import sched_init
+.import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init
+.import task00,task01,task02
 
 .include "task.inc"
-.include "macros.inc"
 .include "hw/cgia.inc"
 
+.code
 kernel_start:
         rep #%00110000  ; 16 bit data and idx
 .a16
@@ -14,12 +14,21 @@ kernel_start:
 
         jsr task_init
         jsr sched_init
+        jsr sys_init
         ; TODO: reset CGIA, setup MODE0
 
 ; --- vvv --------------- fake tasks !!! -----------------------
-        ; Task1 is "running", so its stack is empty
-        lda #$1ff
+        ; Tasks are "preempted", so stacks have "saved" registers
+        lda #$1ff - 4 - 9
         sta task01+TCB::sp
+        lda #0          ; Program Bank
+        sta $1ff - 1    ; off by 1, because acc is 16 bit
+        lda #$32
+        sta $1ff - 3    ; Status Register
+        lda #Task1_start
+        sta $1ff - 2
+        lda #$0100
+        sta $1ff - 6    ; Set Direct Page
 
         ; Task2 is "preempted", so its stack has "saved" registers
         lda #$2ff - 4 - 9
@@ -31,29 +40,26 @@ kernel_start:
         lda #Task2_start
         sta $2ff - 2
         lda #$0200
-        sta $2ff - 3 - 8; Set Direct Page
+        sta $2ff - 6    ; Set Direct Page
 ; --- ^^^ --------------- fake tasks !!! -----------------------
         ; Setup kernel Task (task00)
         tsc
         sta task00+TCB::sp
 
-        ; Set current task to Task 1
-        lda #task01
+        ; Set current task
+        lda #task00
         sta CURRENT_TASK
-        lda #$0100
-        tcd         ; Set Direct Page
-        lda task01+TCB::sp
-        tcs         ; Set Stack Pointer
+        sta NEXT_TASK
 
         sep #%00110000      ; 8-bit acc & index
 .a8
 .i8
+        lda #CGIA_REG_INT_FLAG_VBI
+        sta CGIA::int_enable    ; enable NMI on VBL
+
         cli                 ; Enable IRQ interrupts
 
-        lda #CGIA_REG_INT_FLAG_VBI
-        sta CGIA::int_enable    ; trigger NMI on VBL
-
-        jml Task1_start     ; Jump to first task
+_loop:  bra _loop
 
 ; ------------------ fake tasks !!! -----------------------
 Task1_start:
@@ -68,4 +74,5 @@ Task2_start:
 Task2_loop:
         dec A
         sta $84
+        cop $11
         bra Task2_loop

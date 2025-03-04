@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "tlgkccampbell.code-ca65",
+    "ms-vscode.cmake-tools",
+    "streetsidesoftware.code-spell-checker",
+    "DavidAnson.vscode-markdownlint"
+  ]
+}

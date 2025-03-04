@@ -1,6 +1,7 @@
 .include "task.inc"
 
-.export TASKS, CURRENT_TASK, task_init
+.export CURRENT_TASK,NEXT_TASK
+.export TASKS, task_init
 .export task00,task01,task02,task03,task04,task05,task06,task07,task08,task09,task0A,task0B,task0C,task0D,task0E,task0F,task10,task11,task12,task13,task14,task15,task16,task17,task18,task19,task1A,task1B,task1C,task1D,task1E,task1F
 
 .data
@@ -39,16 +40,17 @@ task1E:  .tag TCB
 task1F:  .tag TCB
 
 CURRENT_TASK:   .res 2
+NEXT_TASK:      .res 2
 
+.code
 .a16
 .i16
 task_init:
+        stz TASKS
         ; clear tasks control blocks
-        lda #$00
-        sta TASKS
         ldx #TASKS
-        ldy #TASKS+1
-        lda # TASKS_NO * .sizeof(TCB) - 2
+        ldy #TASKS+2
+        lda # TASKS_NO * .sizeof(TCB) - 3
         mvn 0,0
 
         rts

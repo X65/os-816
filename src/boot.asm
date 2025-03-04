@@ -2,13 +2,15 @@
         .asciiz "OS/816 - Operating System for X65 microcomputer"
 
 .segment "VECTORS"
-        .word 0, 0, COP_NT, BRK_NT, ABORT_NT, NMI_NT, 0, IRQ_NT
-        .word 0, 0, COP_EM, 0, ABORT_EM, NMI_EM, RESET_VEC, IRQ_EM
+        .word 0, 0, NOP_ISR, STOP_ISR, NOP_ISR, NOP_ISR, 0, NOP_ISR
+        .word 0, 0, NOP_ISR, 0, NOP_ISR, NOP_ISR, RESET_HDL, NOP_ISR
 
 .import kernel_start
 
+.include "hw/ria.inc"
+
 .segment "STARTUP"
-RESET_VEC:
+RESET_HDL:
         sei             ; disable interrupts
 
         clc
@@ -16,6 +18,8 @@ RESET_VEC:
 
         ;     --mx----
         sep #%00110000  ; 8-bit data and idx
+        .a8
+        .i8
 
                         ; direct page is already 0000 after reset
         ldx #$ff        ; stack is shared with direct page (high byte of X is 00)
@@ -28,13 +32,12 @@ RESET_VEC:
         jmp kernel_start ; no-return
 
 
-COP_EM:
-ABORT_EM:
-NMI_EM:
-IRQ_EM:
-COP_NT:
-BRK_NT:
-ABORT_NT:
-NMI_NT:
-IRQ_NT:
+NOP_ISR:
         rti             ; do nothing
+
+STOP_ISR:
+        sep #%00110000
+        .a8
+        .i8
+        lda #$FF
+        sta RIA::op

@@ -9,11 +9,11 @@ set(executable_name ${CMAKE_PROJECT_NAME})
 add_executable(${executable_name})
 target_compile_options(${executable_name} PUBLIC
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
-    -Wa --listing,${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.lst,--cpu,65816,-I,${CMAKE_SOURCE_DIR}/src
+    -Wa --cpu,65816,-I,${CMAKE_SOURCE_DIR}/src
 )
 target_link_options(${executable_name} PUBLIC
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
-    -Ln ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.lab
+    -Ln ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.lbl
     --mapfile ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.map
     -Wl --dbgfile,${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.dbg
 )
@@ -25,6 +25,8 @@ target_sources(${executable_name} PRIVATE
     src/kernel/main.asm
     src/kernel/task.asm
     src/kernel/sched.asm
+    src/kernel/sys.asm
+    src/kernel/isr.asm
 )
 
 install(TARGETS ${executable_name})
