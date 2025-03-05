@@ -6,6 +6,8 @@
 .include "task.inc"
 .include "hw/cgia.inc"
 
+.include "macros.inc"
+
 .code
 kernel_start:
         rep #%00110000  ; 16 bit data and idx
@@ -62,6 +64,10 @@ kernel_start:
 _loop:  bra _loop
 
 ; ------------------ fake tasks !!! -----------------------
+;
+; Simple counter running in own context
+; Demonstrates that A register is preserved
+;
 Task1_start:
         lda #$01
 Task1_loop:
@@ -69,10 +75,24 @@ Task1_loop:
         sta $82
         bra Task1_loop
 
+;
+; ECHO task continuously reading from UART and writing back
+; Demonstrates SYSCALL API calls
+;
 Task2_start:
-        lda #$FF
+        _a16
 Task2_loop:
-        dec A
-        sta $84
-        cop $11
+        pea 16                  ; buffer length
+        pea Task2_buffer        ; buffer address
+        lda #1                  ; READ API no
+        cop $21                 ; System Call
+        ; .C contains number of characters read
+        pha                     ; chars to write
+        pea Task2_buffer        ; buffer address
+        lda #2                  ; WRITE API no
+        cop $21                 ; System Call
+
         bra Task2_loop
+; buffer for chars read/written
+Task2_buffer:
+        .res 16

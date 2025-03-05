@@ -1,11 +1,15 @@
 ; Interrupt Service Routines
-.export NMI_ISR,COP_ISR
+.export NMI_ISR,COP_ISR,COP_EXIT
 
 .import Sched_uler,SYSCALL_TASK,SYSCALL_LOCK
 .import CURRENT_TASK,NEXT_TASK,TASKS
+.import sparmtab,apioff,apidptab
 
 .include "task.inc"
+.include "api.inc"
 .include "hw/cgia.inc"
+.include "hw/ria.inc"
+.include "macros.inc"
 
 .code
 .a16
@@ -40,7 +44,6 @@
         plb
         plb     ; pull second time as pushed C took two bytes
 .endmacro
-
 
 ; -----------------------------------------------------------------------------
 ; Interrupt triggered by VBL every 1/60sec
@@ -82,17 +85,58 @@ COP_ISR:
         .a8
         inc SYSCALL_LOCK
         isr_prologue
+        lda CURRENT_TASK
+        sta SYSCALL_TASK
+        cli     ; re-enable regular interrupts
         kernel_context
 
-        tsc
-        ldx CURRENT_TASK
-        sta TCB::sp, x  ; Save SP to TCB
-        stx SYSCALL_TASK
-
-        cli     ; re-enable regular interrupts
-
         ; do SysCall
-        inc $111
+        ; http://sbc.bcstechnology.net/65c816interrupts.html#toc:65c816_kertrap_api
+        lda reg_a,s           ; load saved copy of .C
+        and #$00FF            ; mask garbage in .B (16 bit mask)
+        beq icop01            ; API index cannot be zero†
+;
+        dec a                 ; zero-align API index
+        cmp #maxapi           ; index in range (16 bit comparison)?
+        bcs icop01            ; no, error†
+;
+        asl a                 ; double API index for...
+        tax                   ; API dispatch table offset
+        sta apioff            ; save offset &...
+        jmp (apidptab,x)      ; run appropriate code
+;
+;
+;    invalid API index error processing...
+;
+icop01:
+        ; † TODO: core-dump
+        _a8
+        lda #$FF
+        sta RIA::op             ; STOP the machine
+@_loop: bra @_loop
+
+COP_EXIT:
+        ; SysCall arguments frame cleanup
+        ; http://sbc.bcstechnology.net/65c816interrupts.html#toc:post_api
+        rep #%00110001        ;select 16 bit registers & clear carry
+        .a16
+        .i16
+        tsc                   ;get SP
+        adc #s_regsf+s_libsf  ;add bytes in register & library stack frames
+        tax                   ;now is “from” address for stack frame shift
+;
+        ldy apioff            ;API dispatch offset
+        adc sparmtab,y        ;add bytes in user stack frame
+        tay                   ;now is “to” address for stack frame shift
+;
+        lda #s_regsf+s_libsf-1
+        mvp #0,#0             ;shift stack frames
+;
+        tyx                   ;adjust...
+        txs                   ;stack pointer
+
+        ldx CURRENT_TASK
+        sty TCB::sp, x          ; Save SP to TCB
 
         ; Restore current/new task state (NEXT_TASK could change during syscall)
         ldx NEXT_TASK

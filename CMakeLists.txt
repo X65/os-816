@@ -27,6 +27,7 @@ target_sources(${executable_name} PRIVATE
     src/kernel/sched.asm
     src/kernel/sys.asm
     src/kernel/isr.asm
+    src/kernel/api_io.asm
 )
 
 install(TARGETS ${executable_name})
