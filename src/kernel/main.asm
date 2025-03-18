@@ -58,6 +58,7 @@ kernel_start:
 .i8
         lda #CGIA_REG_INT_FLAG_VBI
         sta CGIA::int_enable    ; enable NMI on VBL
+        sta CGIA::int_status    ; ACK if any INT is pending
 
         cli                 ; Enable IRQ interrupts
 
