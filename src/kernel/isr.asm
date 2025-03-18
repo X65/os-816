@@ -53,6 +53,15 @@ NMI_ISR:
         isr_prologue
         kernel_context
 
+        ; Check whether we interrupted a task and should save its state
+        lda SYSCALL_LOCK
+        bne @in_syscall_1
+        ; Save current task SP to TCB
+        ldx CURRENT_TASK
+        tsc
+        sta TCB::sp, x
+@in_syscall_1:
+
         ; TODO: periodic tasks, timekeeping etc.
 
         ; Switch to next task
@@ -60,12 +69,12 @@ NMI_ISR:
 
         ; Check whether we should switch tasks or return to kernel
         lda SYSCALL_LOCK
-        bne @in_syscall
+        bne @in_syscall_2
         ldx NEXT_TASK           ; Return to new task state
         lda TCB::sp, x          ; Load task's SP
         tcs                     ; Restore stack pointer
         stx CURRENT_TASK        ; Set new task as current
-@in_syscall:
+@in_syscall_2:
 
         isr_epilogue
 
@@ -85,10 +94,15 @@ COP_ISR:
         .a8
         inc SYSCALL_LOCK
         isr_prologue
-        lda CURRENT_TASK
-        sta SYSCALL_TASK
-        cli     ; re-enable regular interrupts
         kernel_context
+
+        ldx CURRENT_TASK
+        tsc
+        sta TCB::sp, x          ; Save SP to TCB
+        stx SYSCALL_TASK
+
+        cli     ; re-enable regular interrupts
+
 
         ; do SysCall
         ; http://sbc.bcstechnology.net/65c816interrupts.html#toc:65c816_kertrap_api
@@ -136,7 +150,7 @@ COP_EXIT:
         txs                   ;stack pointer
 
         ldx CURRENT_TASK
-        sty TCB::sp, x          ; Save SP to TCB
+        sty TCB::sp, x          ; Save SP to TCB (it is left in Y by MVP)
 
         ; Restore current/new task state (NEXT_TASK could change during syscall)
         ldx NEXT_TASK
