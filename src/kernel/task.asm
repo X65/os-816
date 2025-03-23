@@ -4,7 +4,7 @@
 .export TASKS, task_init
 .export task00,task01,task02,task03,task04,task05,task06,task07,task08,task09,task0A,task0B,task0C,task0D,task0E,task0F,task10,task11,task12,task13,task14,task15,task16,task17,task18,task19,task1A,task1B,task1C,task1D,task1E,task1F
 
-.data
+.segment "TCB"
 TASKS:
 task00:  .tag TCB
 task01:  .tag TCB
@@ -39,6 +39,7 @@ task1D:  .tag TCB
 task1E:  .tag TCB
 task1F:  .tag TCB
 
+.data
 CURRENT_TASK:   .res 2
 NEXT_TASK:      .res 2
 

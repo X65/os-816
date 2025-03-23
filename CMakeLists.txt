@@ -27,6 +27,7 @@ target_sources(${executable_name} PRIVATE
     src/kernel/sched.asm
     src/kernel/sys.asm
     src/kernel/isr.asm
+    src/kernel/io.asm
     src/kernel/api_io.asm
 )
 
