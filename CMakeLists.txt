@@ -29,6 +29,9 @@ target_sources(${executable_name} PRIVATE
     src/kernel/isr.asm
     src/kernel/io.asm
     src/kernel/api_io.asm
+    src/shell/main.asm
+    src/shell/errors.asm
+    src/shell/cmds.asm
 )
 
 install(TARGETS ${executable_name})

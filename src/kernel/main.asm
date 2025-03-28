@@ -2,6 +2,7 @@
 
 .import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init
 .import task00,task01,task02
+.import shell_main
 
 .include "task.inc"
 .include "hw/cgia.inc"
@@ -39,7 +40,7 @@ kernel_start:
         sta $2ff - 1    ; off by 1, because acc is 16 bit
         lda #$32
         sta $2ff - 3    ; Status Register
-        lda #Task2_start
+        lda #shell_main
         sta $2ff - 2
         lda #$0200
         sta $2ff - 6    ; Set Direct Page
@@ -75,25 +76,3 @@ Task1_loop:
         inc A
         sta $82
         bra Task1_loop
-
-;
-; ECHO task continuously reading from UART and writing back
-; Demonstrates SYSCALL API calls
-;
-Task2_start:
-        _a16
-Task2_loop:
-        pea 16                  ; buffer length
-        pea Task2_buffer        ; buffer address
-        lda #1                  ; READ API no
-        cop $21                 ; System Call
-        ; .C contains number of characters read
-        pha                     ; chars to write
-        pea Task2_buffer        ; buffer address
-        lda #2                  ; WRITE API no
-        cop $21                 ; System Call
-
-        bra Task2_loop
-; buffer for chars read/written
-Task2_buffer:
-        .res 16

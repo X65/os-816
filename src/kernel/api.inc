@@ -21,3 +21,8 @@ s_libsf  =lib_rts+0-lib_rts    ;library stack frame size in bytes (is not requir
 
 ; number of registered System Call APIs (in apidptab)
 maxapi = 2
+
+.enum
+    CON_READ    = 1
+    CON_WRITE   = 2
+.endenum

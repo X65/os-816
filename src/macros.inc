@@ -21,3 +21,13 @@
     rep #%00010000  ; 16-bit index
     .i16
 .endmacro
+.macro _ai8
+    sep #%00110000  ; 8-bit accumulator and index
+    .a8
+    .i8
+.endmacro
+.macro _ai16
+    rep #%00110000  ; 16-bit accumulator and index
+    .a16
+    .i16
+.endmacro
