@@ -12,6 +12,7 @@ Features:
 - Multitasking (up to 32 tasks)
 - SysCall based (using COP instruction)
 - SIGnal based IPC
+- Message-Passing IPC
 - Virtual Consoles
 - Virtual File System (VFS)
 - Running in 65816 Native mode
