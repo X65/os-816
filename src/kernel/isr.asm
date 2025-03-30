@@ -89,20 +89,27 @@ NMI_ISR:
 ; Main entry to OS SysCall interface
 ; -----------------------------------------------------------------------------
 COP_ISR:
-        ; block scheduler
+        ; block scheduler preemption
         sep #%00100000
         .a8
         inc SYSCALL_LOCK
+
+        ; save current task state
+        ; (stack already has PBR, PCH, PCL and P)
         isr_prologue
         kernel_context
 
         ldx CURRENT_TASK
         tsc
-        sta TCB::sp, x          ; Save SP to TCB
+        sta TCB::sp, x          ; save SP to TCB
         stx SYSCALL_TASK
 
         cli     ; re-enable regular interrupts
 
+        ;ldy #$FFFF              ; stored PC points to next instruction, so back up -1
+        ;lda (reg_pc,s),y        ; load COP argument
+        ;and #$00FF              ; mask garbage in .B
+        ;                        ; .A contains the API block, should always be $21
 
         ; do SysCall
         ; http://sbc.bcstechnology.net/65c816interrupts.html#toc:65c816_kertrap_api

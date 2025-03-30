@@ -10,7 +10,7 @@ ERRNO_MAX = 16
 
 shell_error:
     cmp #ERRNO_MAX
-    blt :+  ; if error number is less than ERRNO_MAX
+    blt :+  ; skip if error number is less than ERRNO_MAX
     lda #0  ; set error number to 0
 :   asl A   ; multiply error number by 2
     tax
