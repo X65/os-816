@@ -1,14 +1,15 @@
-.export API_read,API_write
+.export UART_read,UART_write
 
-.import COP_EXIT
+.import sys_success
 
-.include "api.inc"
+.include "kernel/api.inc"
 .include "hw/ria.inc"
 
 .include "macros.inc"
 
-.smart
-
+.code
+.a16
+.i16
 ;
 ;    user stack frame...
 ;
@@ -18,9 +19,7 @@ buflen  =bufptr+2           ; buffer length
 ;
 ; READ from UART
 ;
-API_read:
-        rep #%00110000      ; 16 bit accumulator and index
-
+UART_read:
         ldy #0              ; buffer index
 
         lda buflen,s        ; get length
@@ -42,15 +41,12 @@ API_read:
 @read_exit:
         _a16
         tya
-        sta reg_a,s           ;overwrite .C’s stack copy
-        jmp COP_EXIT
+        jmp sys_success
 
 ;
 ; WRITE to UART
 ;
-API_write:
-        rep #%00110000      ; 16 bit accumulator and index
-
+UART_write:
         ldy #0              ; buffer index
 
         lda buflen,s        ; get length
@@ -72,6 +68,5 @@ API_write:
 @write_exit:
         _a16
         tya
-        sta reg_a,s           ;overwrite .C’s stack copy
-        jmp COP_EXIT
+        jmp sys_success
 

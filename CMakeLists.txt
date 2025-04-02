@@ -27,8 +27,12 @@ target_sources(${executable_name} PRIVATE
     src/kernel/sched.asm
     src/kernel/sys.asm
     src/kernel/isr.asm
-    src/kernel/io.asm
-    src/kernel/api_io.asm
+    src/kernel/cio.asm
+    src/kernel/uart.asm
+    src/dev/init.asm
+    src/dev/S.asm
+    src/dev/K.asm
+    src/dev/E.asm
     src/shell/main.asm
     src/shell/errors.asm
     src/shell/cmds.asm

@@ -1,10 +1,11 @@
 .export kernel_start
 
-.import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init
+.import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init,CIO_init
 .import task00,task01,task02
 .import shell_main
 
-.include "task.inc"
+.include "kernel/task.inc"
+.include "kernel/api.inc"
 .include "hw/cgia.inc"
 
 .include "macros.inc"
@@ -18,6 +19,7 @@ kernel_start:
         jsr task_init
         jsr sched_init
         jsr sys_init
+        jsr CIO_init
         ; TODO: reset CGIA, setup MODE0
 
 ; --- vvv --------------- fake tasks !!! -----------------------

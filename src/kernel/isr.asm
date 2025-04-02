@@ -90,9 +90,8 @@ NMI_ISR:
 ; -----------------------------------------------------------------------------
 COP_ISR:
         ; block scheduler preemption
-        sep #%00100000
-        .a8
-        inc SYSCALL_LOCK
+        inc SYSCALL_LOCK        ; lock is two bytes, but we care only about Low
+                                ; so it does not matter which mode is M flag
 
         ; save current task state
         ; (stack already has PBR, PCH, PCL and P)

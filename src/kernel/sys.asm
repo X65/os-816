@@ -1,9 +1,13 @@
 ; SysCall implementation
 .export sys_init,SYSCALL_TASK,SYSCALL_LOCK
+.export sys_success,sys_error
 .export apioff,apidptab,sparmtab
 
-.import COP_ISR
-.import API_read,API_write
+.import COP_ISR,COP_EXIT
+.import UART_read,UART_write
+.import CIO_open
+
+.include "kernel/api.inc"
 
 .include "macros.inc"
 
@@ -18,8 +22,9 @@ apioff: .res 2  ; temporary store of api offset, used in stack cleanup
 ; NOTE: update `maxapi` in api.inc after adding new item
 ;
 apidptab:
-        .addr API_read
-        .addr API_write
+        .addr UART_read
+        .addr UART_write
+        .addr CIO_open
 
 ;
 ; System Call API parameters count
@@ -37,9 +42,28 @@ sys_init:
         lda #COP_ISR
         sta $ffe4           ; Native COP vector
 
-        _a8
-        stz SYSCALL_LOCK
-        _a16
+        stz SYSCALL_LOCK    ; We are not in a syscall
 
         rts
 
+; Exit SysCall with return value in .A
+sys_success:
+.a16
+        sta reg_a,s           ;overwrite .C’s stack copy
+        ; Flag a successful operation by clearing the carry bit in SR:
+        _a8
+        lda reg_sr,s          ;stack copy of SR
+        and #%11111110        ;clear carry bit &...
+        sta reg_sr,s          ;rewrite
+        jmp COP_EXIT
+
+; Exit SysCall with error value in .A
+sys_error:
+.a16
+        sta reg_a,s           ;overwrite .C’s stack copy
+        ; Flag an error by setting the carry bit in SR:
+        _a8
+        lda reg_sr,s          ;stack copy of SR
+        ora #%00000001        ;set carry bit &...
+        sta reg_sr,s          ;rewrite
+        jmp COP_EXIT
