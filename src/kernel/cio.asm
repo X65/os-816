@@ -117,6 +117,16 @@ CIO_open_check_dev_handlers_letter:
         lda dev_handlers_tab+1,y    ; copy handler address
         sta CIOCBS+CIOCB::device,x  ; to CIOCB
 
+        ; Call handler's open procedure
+        ; will "JSR" to CIO handler function, by manipulating stack
+        per CIO_open_cont-1     ; push the return address
+        pha                     ; store handler address to stack
+        ldy #DEV_HANDLER::open  ; open function offset
+        lda (1,s),y             ; load open function address
+        dec A                   ; RTS address on stack is -1 of the return address
+        sta 1,s                 ; store the address to stack
+        rts                     ; "return" to just pushed address
+CIO_open_cont:
         ; Now compute the index of CIOCB
         txa
         lsr
