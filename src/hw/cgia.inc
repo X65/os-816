@@ -17,6 +17,19 @@
 .define PLANE_MASK_BORDER_TRANSPARENT %00001000
 .define PLANE_MASK_DOUBLE_WIDTH       %00010000
 
+.struct CGIA_PLANE_FG
+    flags           .byte
+    border_columns  .byte
+    row_height      .byte
+    stride          .byte
+    scroll_x        .byte
+    offset_x        .byte
+    scroll_y        .byte
+    offset_y        .byte
+    shared_color0   .byte
+    shared_color1   .byte
+.endstruct
+
 .struct CGIA_PWM
     freq    .word
     duty    .byte
@@ -61,3 +74,24 @@
 .define CGIA_REG_INT_FLAG_VBI %10000000
 .define CGIA_REG_INT_FLAG_DLI %01000000
 .define CGIA_REG_INT_FLAG_RSI %00100000
+
+text_mode_fg_color = 150; // 0x96
+text_mode_bg_color = 145; // 0x91
+
+CGIA_DL_IN_EMPTY_LINE = $00
+CGIA_DL_IN_DUPL_LINE  = $01
+CGIA_DL_IN_JUMP       = $02
+CGIA_DL_IN_LOAD_SCAN  = $03
+CGIA_DL_IN_LMS  = %00010000
+CGIA_DL_IN_LFS  = %00100000
+CGIA_DL_IN_LBS  = %01000000
+CGIA_DL_IN_LCG  = %10000000
+CGIA_DL_IN_VBL  = %10000000
+
+CGIA_DL_IN_MODE2      = $0A
+CGIA_DL_IN_MODE3      = $0B
+CGIA_DL_IN_MODE4      = $0C
+CGIA_DL_IN_MODE5      = $0D
+CGIA_DL_IN_MODE6      = $0E
+CGIA_DL_IN_MODE7      = $0F
+

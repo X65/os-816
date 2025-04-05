@@ -33,6 +33,7 @@ target_sources(${executable_name} PRIVATE
     src/dev/S.asm
     src/dev/K.asm
     src/dev/E.asm
+    src/hw/dspl.asm
     src/shell/main.asm
     src/shell/errors.asm
     src/shell/cmds.asm

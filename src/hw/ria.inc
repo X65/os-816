@@ -1,5 +1,5 @@
 .struct RIA
-                .org    $FFC0
+    .org    $FFC0
 
     ; math accelerator
     opera       .word
@@ -67,7 +67,7 @@
 .endstruct
 
 .struct TIMERS
-                .org    $FF88
+    .org    $FF88
     ; CIA compatible timers
     ta_lo       .byte
     ta_hi       .byte
@@ -80,7 +80,7 @@
 .endstruct
 
 .struct GPIO
-                .org    $FF80
+    .org    $FF80
     ; GPIO ports
     in0         .byte
     in1         .byte
@@ -91,3 +91,6 @@
     cfg0        .byte
     cfg1        .byte
 .endstruct
+
+RIA_API_HALT        = $FF
+RIA_API_GET_CHARGEN = $10

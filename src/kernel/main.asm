@@ -1,6 +1,6 @@
 .export kernel_start
 
-.import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init,CIO_init
+.import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init,CIO_init,dspl_init
 .import task00,task01,task02
 .import shell_main
 
@@ -20,7 +20,10 @@ kernel_start:
         jsr sched_init
         jsr sys_init
         jsr CIO_init
-        ; TODO: reset CGIA, setup MODE0
+        jsr dspl_init
+
+        ; TODO: Open S: device
+        ; and use obtained FD as STDOUT and STDERR of spawned task
 
 ; --- vvv --------------- fake tasks !!! -----------------------
         ; Tasks are "preempted", so stacks have "saved" registers

@@ -131,7 +131,7 @@ COP_ISR:
 icop01:
         ; † TODO: core-dump
         _a8
-        lda #$FF
+        lda #RIA_API_HALT
         sta RIA::op             ; STOP the machine
 @_loop: bra @_loop
 
