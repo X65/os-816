@@ -40,25 +40,18 @@ CIO_init:
         ; TODO: fill #0 with "invalid descriptor" device
 
         ; Call every handler init()
-        ldy #DEV_HANDLER::init  ; init function offset
-        ldx #0
+        ldy #0
 :       _a8
-        lda dev_handlers_tab,x
+        lda dev_handlers_tab,y  ; load handler letter or NUL if end of table
         _a16
-        beq :+
-        inx
-
-        ; will "JSR" to CIO handler function, by manipulating stack
-        per CIO_init_cont-1     ; push the return address
-        lda dev_handlers_tab,x  ; load dev handlers table address
-        pha                     ; store to stack
-        lda (1,s),y             ; load init function address
-        dec A                   ; RTS address on stack is -1 of the return address
-        sta 1,s                 ; store the address to stack
-        rts                     ; "return" to just pushed address
-CIO_init_cont:
-        inx
-        inx
+        beq :+                  ; exit when reached end of dev_handlers_tab marker
+        iny                     ; move to point to handler's procedures table
+        lda dev_handlers_tab,y  ; load dev handlers table address
+        add #DEV_HANDLER::init  ; add init function offset
+        tax
+        jsr ($0000,x)           ; JSR to init procedure
+        iny
+        iny                     ; move over address to next entry
         bra :-
 :
         rts
@@ -114,21 +107,18 @@ CIO_open_check_dev_handlers_letter:
         _a16
         stz CIOCBS+CIOCB::buffer+1,x; clear buffer address
 
-        lda dev_handlers_tab+1,y    ; copy handler address
+        lda dev_handlers_tab+1,y    ; copy handler table address
         sta CIOCBS+CIOCB::device,x  ; to CIOCB
 
+        txy                         ; save .X in .Y
+
         ; Call handler's open procedure
-        ; will "JSR" to CIO handler function, by manipulating stack
-        per CIO_open_cont-1     ; push the return address
-        pha                     ; store handler address to stack
-        ldy #DEV_HANDLER::open  ; open function offset
-        lda (1,s),y             ; load open function address
-        dec A                   ; RTS address on stack is -1 of the return address
-        sta 1,s                 ; store the address to stack
-        rts                     ; "return" to just pushed address
-CIO_open_cont:
+        add #DEV_HANDLER::open  ; add open function offset
+        tax
+        jsr ($0000,x)           ; JSR to open procedure
+
         ; Now compute the index of CIOCB
-        txa
+        tya ; get saved from .Y
         lsr
         lsr
         lsr ; divide by 8
