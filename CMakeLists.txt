@@ -29,6 +29,7 @@ target_sources(${executable_name} PRIVATE
     src/kernel/isr.asm
     src/kernel/cio.asm
     src/kernel/uart.asm
+    src/kernel/dbg.asm
     src/dev/init.asm
     src/dev/S.asm
     src/dev/K.asm

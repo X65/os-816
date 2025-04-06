@@ -2,7 +2,7 @@
 
 .import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init,CIO_init,dspl_init
 .import task00,task01,task02
-.import shell_main
+.import shell_main,dbg_task
 
 .include "kernel/task.inc"
 .include "kernel/api.inc"
@@ -33,7 +33,7 @@ kernel_start:
         sta $1ff - 1    ; off by 1, because acc is 16 bit
         lda #$32
         sta $1ff - 3    ; Status Register
-        lda #Task1_start
+        lda #dbg_task
         sta $1ff - 2
         lda #$0100
         sta $1ff - 6    ; Set Direct Page
@@ -69,15 +69,3 @@ kernel_start:
         cli                 ; Enable IRQ interrupts
 
 _loop:  bra _loop
-
-; ------------------ fake tasks !!! -----------------------
-;
-; Simple counter running in own context
-; Demonstrates that A register is preserved
-;
-Task1_start:
-        lda #$01
-Task1_loop:
-        inc A
-        sta $82
-        bra Task1_loop
