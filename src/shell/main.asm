@@ -103,12 +103,12 @@ shell_eval:
     beq :+                  ; or error code in A
     lda #ENOENT
     rts
-:   jsr (shell_commands, X)
+:   jsr (shell_commands,x)
     rts
 
 TOKENS_NO = 16
 shell_tokens:
-    .res 16 * 2
+    .res TOKENS_NO * 2
 
 shell_tokenize_buffer:
     ; Tokenize the buffer
@@ -124,11 +124,7 @@ shell_tokenize_loop:
     _a8
     lda (shell_str_ptr)
     bne :+
-    _ai16               ; restore regs to 16 bit before returning
-    stz shell_tokens, X ; nul-terminate the tokens
-    rts                 ; found nul-terminator - exit
-    .a8                 ; but the following code is still 8-bit, tell the assembler that
-    .i8
+    bra shell_tokenize_exit     ; found nul-terminator - exit
 :   cmp #' '
     bne :+
     lda #0
@@ -140,12 +136,14 @@ shell_tokenize_loop:
     iny                 ; start of token - set in-token flag
     _a16
     lda shell_str_ptr   ; store the token start address
-    sta shell_tokens, X
+    sta shell_tokens,x
     inx
     inx
-    cpx #(TOKENS_NO-1)*2             ; max of 16 tokens (including nul-termination)
+    cpx #(TOKENS_NO-1)*2    ; max of 16 tokens (including nul-termination)
     bne shell_tokenize_loop
-    _ai16
+shell_tokenize_exit:
+    _ai16               ; restore regs to 16 bit before returning
+    stz shell_tokens,x  ; nul-terminate the tokens
     rts
 
     ; Print a nul-terminated string
