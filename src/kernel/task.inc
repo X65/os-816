@@ -4,6 +4,16 @@
         data    .faraddr; Message Data (immediatre or address)
 .endstruct
 
+.enum
+        TASK_FREE = 0
+        TASK_GENESIS    ; the task is in the process of being created
+        TASK_RUNNING
+        TASK_STOPPED    ; not getting CPU time but still processing signals
+        TASK_WAITING    ; waiting for I/O, but can still receive signals
+        TASK_SIGNAL     ; processing a signal, cannot be preempted
+        TASK_SINGLE     ; cannot be preempted, must yield or use a syscall to give up CPU time
+.endenum
+
 .struct TCB     ; Task Control Block (32 bytes)
         sp      .addr   ; Stack Pointer (SP)
         state   .byte   ; Task State

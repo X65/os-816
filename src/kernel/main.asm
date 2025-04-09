@@ -1,7 +1,7 @@
 .export kernel_start
 
 .import CURRENT_TASK,NEXT_TASK,task_init,sched_init,sys_init,CIO_init,dspl_init
-.import task00,task01,task02
+.import TASKS,task00,task01,task02,task_create
 .import shell_main,dbg_task
 
 .include "kernel/task.inc"
@@ -12,9 +12,7 @@
 
 .code
 kernel_start:
-        rep #%00110000  ; 16 bit data and idx
-.a16
-.i16
+        _ai16   ; 16 bit data and idx
 
         jsr task_init
         jsr sched_init
@@ -24,32 +22,36 @@ kernel_start:
 
         ; TODO: Open S: device
         ; and use obtained FD as STDOUT and STDERR of spawned task
+        ; pea 'S'         ; S0: .A - device; .B - subdevice no
+        ; pea $0000       ; no path
+        ; lda #IO_OPEN
+        ; cop $21
 
-; --- vvv --------------- fake tasks !!! -----------------------
-        ; Tasks are "preempted", so stacks have "saved" registers
-        lda #$1ff - 4 - 9
-        sta task01+TCB::sp
-        lda #0          ; Program Bank
-        sta $1ff - 1    ; off by 1, because acc is 16 bit
-        lda #$32
-        sta $1ff - 3    ; Status Register
+        ; ---------------------------------------------------------------------
+        ; create two tasks:
+        ; - task for preemption debugging
+        ; - shell task
+
+        jsr task_create     ; new task stack pointer returned in .X
         lda #dbg_task
-        sta $1ff - 2
-        lda #$0100
-        sta $1ff - 6    ; Set Direct Page
+        sta reg_pc,x        ; .PC
+        _a8
+        stz reg_pb,x        ; .PB - override with kernel bank 0
+        ; and start the task
+        lda #TASK_RUNNING
+        sta TASKS+TCB::state,y  ; TCB returned in y
+        _a16
 
-        ; Task2 is "preempted", so its stack has "saved" registers
-        lda #$2ff - 4 - 9
-        sta task02+TCB::sp
-        lda #0          ; Program Bank
-        sta $2ff - 1    ; off by 1, because acc is 16 bit
-        lda #$32
-        sta $2ff - 3    ; Status Register
+        jsr task_create
         lda #shell_main
-        sta $2ff - 2
-        lda #$0200
-        sta $2ff - 6    ; Set Direct Page
-; --- ^^^ --------------- fake tasks !!! -----------------------
+        sta reg_pc,x        ; .PC
+        _a8
+        stz reg_db,x        ; .DB - override with kernel bank 0
+        stz reg_pb,x        ; .PB - override with kernel bank 0
+        lda #TASK_RUNNING
+        sta TASKS+TCB::state,y  ; TCB returned in y
+        _a16
+
         ; Setup kernel Task (task00)
         tsc
         sta task00+TCB::sp
@@ -59,9 +61,7 @@ kernel_start:
         sta CURRENT_TASK
         sta NEXT_TASK
 
-        sep #%00110000      ; 8-bit acc & index
-.a8
-.i8
+        _ai8                ; 8-bit acc & index
         lda #CGIA_REG_INT_FLAG_VBI
         sta CGIA::int_enable    ; enable NMI on VBL
         sta CGIA::int_status    ; ACK if any INT is pending

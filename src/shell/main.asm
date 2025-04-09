@@ -85,14 +85,14 @@ shell_read_line_is_done:
     _a8
     cpy #0      ; are there characters to check
 :   beq shell_read_line_loop
-    lda a:$0000,X
+    lda a:$0000,x
     cmp #$0D    ; check for CR
     beq shell_read_line_done
     inx
     dey
     bra :-
 shell_read_line_done:
-    stz a:$0000,X   ; replace CR with nul-terminator
+    stz a:$0000,x   ; replace CR with nul-terminator
     _a16
     lda #EOK
     rts

@@ -80,7 +80,7 @@ NMI_ISR:
 
         sep #%00100000
         .a8
-        sta CGIA::int_status    ; ACK NMI interrupt
+        sta f:CGIA::int_status  ; ACK NMI interrupt
 
         rti
 
@@ -89,14 +89,14 @@ NMI_ISR:
 ; Main entry to OS SysCall interface
 ; -----------------------------------------------------------------------------
 COP_ISR:
-        ; block scheduler preemption
-        inc SYSCALL_LOCK        ; lock is two bytes, but we care only about Low
-                                ; so it does not matter which mode is M flag
-
         ; save current task state
         ; (stack already has PBR, PCH, PCL and P)
         isr_prologue
         kernel_context
+
+        ; block scheduler preemption
+        inc SYSCALL_LOCK        ; lock is two bytes, but we care only about Low
+                                ; so it does not matter which mode is M flag
 
         ldx CURRENT_TASK
         tsc
@@ -164,8 +164,9 @@ COP_EXIT:
         tcs                     ; Restore stack pointer
         stx CURRENT_TASK
 
-        isr_epilogue
-
         ; unblock sheduler
         stz SYSCALL_LOCK
+
+        isr_epilogue
+
         rti
