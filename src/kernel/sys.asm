@@ -6,6 +6,7 @@
 .import COP_ISR,COP_EXIT
 .import UART_read,UART_write
 .import CIO_open
+.import TASK_set_name
 
 .include "kernel/api.inc"
 
@@ -25,13 +26,16 @@ apidptab:
         .addr UART_read
         .addr UART_write
         .addr CIO_open
+        .addr TASK_set_name
 
 ;
 ; System Call API parameters count
 ;
 sparmtab:
-        .word 4
-        .word 4
+        .word 4 ; UART_read
+        .word 4 ; UART_write
+        .word 4 ; CIO_open
+        .word 2 ; TASK_set_name
 
 .code
 .a16

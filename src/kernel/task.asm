@@ -6,8 +6,11 @@
 .macpack generic
 
 .export CURRENT_TASK,NEXT_TASK
-.export TASKS, task_init,task_create
+.export TASKS, task_init,task_create, task_status_symbol
 .export task00,task01,task02,task03,task04,task05,task06,task07,task08,task09,task0A,task0B,task0C,task0D,task0E,task0F,task10,task11,task12,task13,task14,task15,task16,task17,task18,task19,task1A,task1B,task1C,task1D,task1E,task1F
+.export TASK_set_name
+
+.import sys_success
 
 .segment "TCB"
 TASKS:
@@ -47,6 +50,15 @@ task1F:  .tag TCB
 .data
 CURRENT_TASK:   .res 2
 NEXT_TASK:      .res 2
+
+task_status_symbol:
+        .byte 'F'   ; TASK_FREE
+        .byte 'G'   ; TASK_GENESIS
+        .byte 'R'   ; TASK_RUNNING
+        .byte 'S'   ; TASK_STOPPED
+        .byte 'W'   ; TASK_WAITING
+        .byte 's'   ; TASK_SIGNAL
+        .byte '1'   ; TASK_SINGLE
 
 .code
 .a16
@@ -131,3 +143,17 @@ task_create_found:
         ply         ; restore saved TCB to y
 
         rts
+
+; -----------------------------------------
+
+;
+;    user stack frame...
+;
+nameptr =s_regsf+1          ; name pointer
+
+; SysCall to set Task name
+TASK_set_name:
+        ldx CURRENT_TASK
+        lda nameptr,s
+        sta TCB::name,x
+        jmp sys_success

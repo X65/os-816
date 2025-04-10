@@ -1,22 +1,55 @@
 .export shell_commands, shell_find_command
 
 .importzp shell_str_ptr
-.import shell_tokens, print_string
+.import shell_tokens, print_string,print_char,print_hex
+.import task01, task_status_symbol
 
 .macpack generic
 .a16
 .i16
 .feature string_escapes
 
+.include "kernel/task.inc"
 .include "macros.inc"
-
-CMDS_NO = 2
 
 .zeropage
 shell_token_ptr:
     .addr 0
 
 .code
+CMDS_NO = 3
+CMDS_ALIAS_NO = 2
+
+shell_command_names:
+    .addr shell_command_help_str
+    .addr shell_command_echo_str
+    .addr shell_command_tasks_str
+;   aliases
+    .addr shell_command_alias_help_str
+    .addr shell_command_alias_tasks_str
+
+shell_commands:
+    .addr shell_command_help
+    .addr shell_command_echo
+    .addr shell_command_tasks
+;
+    .addr shell_command_help
+    .addr shell_command_tasks
+
+shell_command_help_str:     .asciiz "help"
+shell_command_echo_str:     .asciiz "echo"
+shell_command_tasks_str:    .asciiz "tasks"
+;
+shell_command_alias_help_str:   .asciiz "?"
+shell_command_alias_tasks_str:  .asciiz "ts"
+
+; --------------------------------------------
+shell_command_IFS:
+    .asciiz " "
+shell_command_NL:
+    .asciiz "\r\n"
+
+; --------------------------------------------
 shell_find_command:
     lda shell_tokens
     sta shell_token_ptr
@@ -46,27 +79,17 @@ shell_find_command_found:
 shell_find_command_next:
     inx
     inx
-    cpx #CMDS_NO*2
+    cpx #(CMDS_NO+CMDS_ALIAS_NO)*2
     bne shell_find_command_loop
     _ai16
     lda #255    ; command not found
     rts
 
-shell_command_names:
-    .addr shell_command_help_str
-    .addr shell_command_echo_str
-
-shell_commands:
-    .addr shell_command_help
-    .addr shell_command_echo
-
-shell_command_help_str: .asciiz "help"
-shell_command_echo_str: .asciiz "echo"
-
+; --------------------------------------------
+; HELP
+; --------------------------------------------
 shell_command_help_HDR:
     .asciiz "Available commands:\r\n"
-shell_command_help_NL:
-    .asciiz "\r\n"
 
 shell_command_help:
     lda #shell_command_help_HDR
@@ -74,7 +97,7 @@ shell_command_help:
     ldx #0
 :   lda shell_command_names, X
     jsr print_string
-    lda #shell_command_help_NL
+    lda #shell_command_NL
     jsr print_string
     inx
     inx
@@ -83,15 +106,15 @@ shell_command_help:
     lda #0
     rts
 
-shell_command_echo_IFS:
-    .asciiz " "
-
+; --------------------------------------------
+; ECHO
+; --------------------------------------------
 shell_command_echo:
     ldx #2
 :   lda shell_tokens, X
     beq :+  ; finish when nul-token found
     jsr print_string
-    lda #shell_command_echo_IFS ; print the space after echo
+    lda #shell_command_IFS ; print the space after echo
     jsr print_string
     inx
     inx
@@ -99,3 +122,62 @@ shell_command_echo:
 :   lda #0
     rts
 
+; --------------------------------------------
+; TS - list tasks
+; --------------------------------------------
+shell_command_tasks:
+    ldx #task01
+    ldy #1
+
+shell_command_tasks_loop:
+    phy                     ; save task no
+    _a8
+    lda f:TCB::state,x      ; load task state
+    beq shell_command_tasks_next
+    phx                     ; save TCB pointer
+    pha                     ; save task state
+    _a16
+    tya                     ; print task no
+    jsr print_hex
+    lda #shell_command_IFS  ; print the space after no
+    jsr print_string
+
+    _ai8
+    plx                     ; load task state to .X
+    lda f:task_status_symbol,x
+    _ai16
+    jsr print_char
+    plx                     ; restore TCB pointer
+
+    lda f:TCB::name,x       ; load task name address
+    beq :+                  ; skip if empty
+
+    lda #shell_command_IFS  ; print the space before name
+    jsr print_string
+
+    ; now we need to temporarily set DBR to task bank, to access its name in print_string
+    phb                     ; save DBR
+    _a8
+    lda 2,s                 ; load task no from stack
+    pha                     ; push task no on stack
+    _a16
+    plb                     ; pull it back to DBR
+    lda f:TCB::name,x       ; load task name address
+    jsr print_string
+    plb                     ; restore saved DBR
+
+:   lda #shell_command_NL
+    jsr print_string
+
+shell_command_tasks_next:
+    _a16
+    txa
+    add #.sizeof(TCB)
+    tax
+    ply                     ; restore task no
+    iny
+    cpy #TASKS_NO
+    bne shell_command_tasks_loop
+
+    lda #0
+    rts

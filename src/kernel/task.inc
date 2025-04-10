@@ -22,7 +22,8 @@
         evtmask .byte   ; Kernel events mask
         sighndl .addr   ; Signal Handler Address
         message .tag MSG
-        _res    .res 3  ; Reserved
+        _res    .res 1  ; Reserved
+        name    .addr   ; Task name address
         fds     .byte 16; Open file descriptors
 .endstruct
 
