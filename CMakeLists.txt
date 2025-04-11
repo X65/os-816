@@ -38,6 +38,7 @@ target_sources(${executable_name} PRIVATE
     src/shell/main.asm
     src/shell/errors.asm
     src/shell/cmds.asm
+    src/shell/print.asm
 )
 
 install(TARGETS ${executable_name})
