@@ -31,3 +31,15 @@
     .a16
     .i16
 .endmacro
+
+; multiple shift helpers
+.macro lsrx Count
+    .repeat Count
+    lsr
+    .endrep
+.endmacro
+.macro aslx Count
+    .repeat Count
+    asl
+    .endrep
+.endmacro

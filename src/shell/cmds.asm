@@ -1,7 +1,7 @@
 .export shell_commands, shell_find_command
 
 .importzp shell_str_ptr
-.import shell_tokens, print_string,print_char,print_hex
+.import shell_tokens, print_string,write_char,print_hex
 .import task01, task_status_symbol
 
 .macpack generic
@@ -146,7 +146,7 @@ shell_command_tasks_loop:
     plx                     ; load task state to .X
     lda f:task_status_symbol,x
     _ai16
-    jsr print_char
+    jsr write_char
     plx                     ; restore TCB pointer
 
     lda f:TCB::name,x       ; load task name address

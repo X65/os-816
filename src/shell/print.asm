@@ -1,6 +1,6 @@
 .exportzp shell_str_ptr
 .export print_string, shell_print
-.export print_hex, print_char
+.export print_hex, write_char
 
 .include "macros.inc"
 .include "errors.inc"
@@ -76,8 +76,12 @@ print_hex_finish:
     jmp print_string
 
 ; --------------------------------------------
-print_char:
-    and #$00ff      ; lower byte + nul-terminator
+write_char:
+    _a8
     sta print_str_buf
-    lda #print_str_buf
-    jmp print_string
+    _a16
+    per 1   ; write one byte
+    per print_str_buf
+    lda #CON_WRITE
+    cop $21
+    rts

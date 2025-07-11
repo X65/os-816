@@ -47,22 +47,22 @@ UART_read:
 ; WRITE to UART
 ;
 UART_write:
-        ldy #0              ; buffer index
+        ldy #0                  ; buffer index
 
-        lda buflen,s        ; get length
-        beq @write_exit     ; exit if nothing to write
+        lda buflen,s            ; get length
+        beq @write_exit         ; exit if nothing to write
 
-        tax                 ; copy counter
+        tax                     ; byte counter
 
         _a8
 @write_loop:
         bit RIA::uart_rdy
-        bpl @write_exit     ; exit if no TX possible
+        bpl @write_exit         ; exit if no TX possible
 
-        lda (bufptr,s),y    ; load byte from buffer
+        lda (bufptr,s),y        ; load byte from buffer
         sta RIA::uart_rxtx
         iny
-        dex
+        dex                     ; decrease byte counter
         bne @write_loop
 
 @write_exit:

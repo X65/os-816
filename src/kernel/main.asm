@@ -20,13 +20,6 @@ kernel_start:
         jsr CIO_init
         jsr dspl_init
 
-        ; TODO: Open S: device
-        ; and use obtained FD as STDOUT and STDERR of spawned task
-        ; pea 'S'         ; S0: .A - device; .B - subdevice no
-        ; pea $0000       ; no path
-        ; lda #IO_OPEN
-        ; cop $21
-
         ; ---------------------------------------------------------------------
         ; create two tasks:
         ; - task for preemption debugging

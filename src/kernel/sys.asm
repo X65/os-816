@@ -5,7 +5,7 @@
 
 .import COP_ISR,COP_EXIT
 .import UART_read,UART_write
-.import CIO_open
+.import CIO_open,CIO_close,CIO_read,CIO_write,CIO_dup
 .import TASK_set_name
 
 .include "kernel/api.inc"
@@ -26,6 +26,10 @@ apidptab:
         .addr UART_read
         .addr UART_write
         .addr CIO_open
+        .addr CIO_close
+        .addr CIO_read
+        .addr CIO_write
+        .addr CIO_dup
         .addr TASK_set_name
 
 ;
@@ -35,6 +39,10 @@ sparmtab:
         .word 4 ; UART_read
         .word 4 ; UART_write
         .word 4 ; CIO_open
+        .word 2 ; CIO_close
+        .word 2 ; CIO_read
+        .word 2 ; CIO_write
+        .word 4 ; CIO_dup
         .word 2 ; TASK_set_name
 
 .code

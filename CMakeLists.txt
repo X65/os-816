@@ -22,6 +22,10 @@ set_target_properties(${executable_name} PROPERTIES
 )
 target_sources(${executable_name} PRIVATE
     src/boot.asm
+    src/macros.inc
+    src/errors.inc
+    src/kernel/api.inc
+    src/kernel/task.inc
     src/kernel/main.asm
     src/kernel/task.asm
     src/kernel/sched.asm
@@ -30,10 +34,13 @@ target_sources(${executable_name} PRIVATE
     src/kernel/cio.asm
     src/kernel/uart.asm
     src/kernel/dbg.asm
+    src/dev/dev.inc
     src/dev/init.asm
     src/dev/S.asm
     src/dev/K.asm
     src/dev/E.asm
+    src/hw/cgia.inc
+    src/hw/ria.inc
     src/hw/dspl.asm
     src/shell/main.asm
     src/shell/errors.asm

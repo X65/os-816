@@ -20,7 +20,7 @@ lib_rts  =reg_pb+1             ;library RTS address
 s_libsf  =lib_rts+0-lib_rts    ;library stack frame size in bytes (is not required)
 
 ; number of registered System Call APIs (in apidptab (sys.asm))
-maxapi = 4
+maxapi = 8
 
 .enum
         ;   API 0 is invalid
@@ -28,6 +28,10 @@ maxapi = 4
     CON_WRITE
 ;
     IO_OPEN
+    IO_CLOSE
+    IO_READ
+    IO_WRITE
+    IO_DUP
 ;
     TASK_SET_NAME
     ; IO_CLOSE  = 2

@@ -30,6 +30,36 @@ shell_main:
     lda #TASK_SET_NAME
     COP $21
 
+    ; Close STDIN/OUT/ERR (just in case...)
+    pea 0
+    lda #IO_CLOSE
+    cop $21
+    pea 1
+    lda #IO_CLOSE
+    cop $21
+    pea 2
+    lda #IO_CLOSE
+    cop $21
+
+    ; Open S: device and use obtained FD as STDIN/OUT/ERR
+    pea 'S'         ; S0: LSB - device; HSB - subdevice no
+    pea $0000       ; no path
+    lda #IO_OPEN
+    cop $21
+
+    pea 0           ; assume that above code worked and returned in FD#0
+    pea 1           ; duplicate as FD#1 (stdout)
+    lda #IO_DUP
+    cop $21
+
+    pea 0
+    pea 2           ; duplicate as FD#2 (stderr)
+    lda #IO_DUP
+    cop $21
+
+
+
+
     ; REPL: Read Eval Print Loop
 shell_loop:
     pea 4
