@@ -22,3 +22,7 @@ Features:
 ## Design details
 
 See separate document: [DESIGN.md](DESIGN.md).
+
+## Contributing
+
+See separate document: [HACKING.md](HACKING.md).

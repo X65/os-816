@@ -1,8 +1,11 @@
 {
   "recommendations": [
-    "tlgkccampbell.code-ca65",
+    "seanahan5000.rpw65",
     "ms-vscode.cmake-tools",
+    "X65-Project.cc65-dbg",
+    "mcu-debug.memory-view",
     "streetsidesoftware.code-spell-checker",
-    "DavidAnson.vscode-markdownlint"
+    "DavidAnson.vscode-markdownlint",
+    "EditorConfig.EditorConfig"
   ]
 }
