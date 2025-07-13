@@ -30,6 +30,15 @@ kernel_start:
         sta reg_pc,x        ; .PC
         _a8
         stz reg_pb,x        ; .PB - override with kernel bank 0
+        ; set the name of task
+        lda #'d'
+        sta TASKS+TCB::name+0,y
+        lda #'b'
+        sta TASKS+TCB::name+1,y
+        lda #'g'
+        sta TASKS+TCB::name+2,y
+        lda #0
+        sta TASKS+TCB::name+3,y
         ; and start the task
         lda #TASK_RUNNING
         sta TASKS+TCB::state,y  ; TCB returned in y
@@ -41,6 +50,12 @@ kernel_start:
         _a8
         stz reg_db,x        ; .DB - override with kernel bank 0
         stz reg_pb,x        ; .PB - override with kernel bank 0
+        lda #'s'
+        sta TASKS+TCB::name+0,y
+        lda #'h'
+        sta TASKS+TCB::name+1,y
+        lda #0
+        sta TASKS+TCB::name+2,y
         lda #TASK_RUNNING
         sta TASKS+TCB::state,y  ; TCB returned in y
         _a16

@@ -17,17 +17,9 @@ dbg_task:
         rep #%00110000      ; 16-bit acc & index
 .a16
 .i16
-        per dbg_task_name
-        lda #TASK_SET_NAME
-        COP $21
-
 ; ---- main ------------------------------------------
 
         lda #$01
 :       inc A
         sta $82
         bra :-
-
-.segment "RODATA"
-dbg_task_name:
-        .asciiz "dbg"

@@ -10,7 +10,9 @@
 .export task00,task01,task02,task03,task04,task05,task06,task07,task08,task09,task0A,task0B,task0C,task0D,task0E,task0F,task10,task11,task12,task13,task14,task15,task16,task17,task18,task19,task1A,task1B,task1C,task1D,task1E,task1F
 .export TASK_set_name
 
-.import sys_success
+.import     sys_success
+.import     kstrncpy
+.importzp   kstrncpy_src, kstrncpy_dst
 
 .segment "TCB"
 TASKS:
@@ -153,7 +155,20 @@ nameptr =s_regsf+1          ; name pointer
 
 ; SysCall to set Task name
 TASK_set_name:
-        ldx CURRENT_TASK
         lda nameptr,s
-        sta TCB::name,x
+        sta kstrncpy_src
+        phb
+        _a8
+        pla
+        sta kstrncpy_src+2
+
+        stz kstrncpy_dst+2
+        _a16
+        lda CURRENT_TASK
+        add #TCB::name          ; add name offset
+        sta kstrncpy_dst
+
+        ldx #TASK_NAME_LEN
+        jsr kstrncpy
+
         jmp sys_success

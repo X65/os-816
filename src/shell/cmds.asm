@@ -122,10 +122,16 @@ shell_command_echo:
 :   lda #0
     rts
 
+shell_command_tasks_header:
+    .asciiz "ID S NAME\r\n"
+
 ; --------------------------------------------
 ; TS - list tasks
 ; --------------------------------------------
 shell_command_tasks:
+    lda #shell_command_tasks_header
+    jsr print_string
+
     ldx #task01
     ldy #1
 
@@ -149,24 +155,17 @@ shell_command_tasks_loop:
     jsr write_char
     plx                     ; restore TCB pointer
 
-    lda f:TCB::name,x       ; load task name address
+    _a8
+    lda f:TCB::name,x       ; load task name first char
     beq :+                  ; skip if empty
 
+    _a16
     lda #shell_command_IFS  ; print the space before name
     jsr print_string
+    jsr shell_command_write_name
 
-    ; now we need to temporarily set DBR to task bank, to access its name in print_string
-    phb                     ; save DBR
-    _a8
-    lda 2,s                 ; load task no from stack
-    pha                     ; push task no on stack
-    _a16
-    plb                     ; pull it back to DBR
-    lda f:TCB::name,x       ; load task name address
-    jsr print_string
-    plb                     ; restore saved DBR
-
-:   lda #shell_command_NL
+:   _a16
+    lda #shell_command_NL
     jsr print_string
 
 shell_command_tasks_next:
@@ -180,4 +179,15 @@ shell_command_tasks_next:
     bne shell_command_tasks_loop
 
     lda #0
+    rts
+
+shell_command_write_name:
+.repeat TASK_NAME_LEN, I
+    _a8
+    lda f:TCB::name + I,x
+    beq :+
+    jsr write_char
+.endrep
+
+:   _a16
     rts
