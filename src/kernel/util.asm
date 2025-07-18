@@ -14,15 +14,15 @@ kstrncpy_dst: .res 3
 ; .x - copy max n chars
 kstrncpy:
         ldy #0
+        txa
+        beq :+
+        _a8
 kstrncpy_loop:
-        dex
-        bpl :+
-        rts
-:       _a8
         lda [kstrncpy_src],y
         sta [kstrncpy_dst],y
-        _a16
         beq :+
         iny
-        bra kstrncpy_loop
-:       rts
+        dex
+        bne kstrncpy_loop
+:       _a16
+        rts
