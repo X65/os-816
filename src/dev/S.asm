@@ -26,11 +26,11 @@ dev_S_special:
         rts
 
 dev_S_handler_tab:
-    .addr dev_S_open
-    .addr dev_S_close
-    .addr dev_S_get
-    .addr dev_S_put
-    .addr dev_S_status
-    .addr dev_S_special
-    .addr dev_S_init
-    .byte 0,0
+        .addr dev_S_open
+        .addr dev_S_close
+        .addr dev_S_get
+        .addr dev_S_put
+        .addr dev_S_status
+        .addr dev_S_special
+        .addr dev_S_init
+        .byte 0,0

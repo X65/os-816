@@ -23,14 +23,14 @@ dspl_buffer_size   = dspl_buffer_width * dspl_buffer_height
 
 .segment "RODATA"
 dspl_display_list:
-    .byte CGIA_DL_IN_LOAD_SCAN | CGIA_DL_IN_LMS|CGIA_DL_IN_LFS|CGIA_DL_IN_LBS|CGIA_DL_IN_LCG
-    .addr dspl_text_buffer
-    .addr dspl_fg_buffer
-    .addr dspl_bg_buffer
-    .addr dspl_chargen
-    .res 30, CGIA_DL_IN_MODE2
-    .byte CGIA_DL_IN_JUMP | CGIA_DL_IN_VBL
-    .addr dspl_display_list
+        .byte CGIA_DL_IN_LOAD_SCAN | CGIA_DL_IN_LMS|CGIA_DL_IN_LFS|CGIA_DL_IN_LBS|CGIA_DL_IN_LCG
+        .addr dspl_text_buffer
+        .addr dspl_fg_buffer
+        .addr dspl_bg_buffer
+        .addr dspl_chargen
+        .res 30, CGIA_DL_IN_MODE2
+        .byte CGIA_DL_IN_JUMP | CGIA_DL_IN_VBL
+        .addr dspl_display_list
 
 .code
 .a16

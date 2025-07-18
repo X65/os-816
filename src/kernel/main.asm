@@ -25,11 +25,11 @@ kernel_start:
         ; - task for preemption debugging
         ; - shell task
 
-        jsr task_create     ; new task stack pointer returned in .X
+        jsr task_create         ; new task stack pointer returned in .X
         lda #dbg_task
-        sta reg_pc,x        ; .PC
+        sta reg_pc,x            ; .PC
         _a8
-        stz reg_pb,x        ; .PB - override with kernel bank 0
+        stz reg_pb,x            ; .PB - override with kernel bank 0
         ; set the name of task
         lda #'d'
         sta TASKS+TCB::name+0,y
@@ -46,10 +46,10 @@ kernel_start:
 
         jsr task_create
         lda #shell_main
-        sta reg_pc,x        ; .PC
+        sta reg_pc,x            ; .PC
         _a8
-        stz reg_db,x        ; .DB - override with kernel bank 0
-        stz reg_pb,x        ; .PB - override with kernel bank 0
+        stz reg_db,x            ; .DB - override with kernel bank 0
+        stz reg_pb,x            ; .PB - override with kernel bank 0
         lda #'s'
         sta TASKS+TCB::name+0,y
         lda #'h'
@@ -69,11 +69,11 @@ kernel_start:
         sta CURRENT_TASK
         sta NEXT_TASK
 
-        _ai8                ; 8-bit acc & index
+        _ai8                    ; 8-bit acc & index
         lda #CGIA_REG_INT_FLAG_VBI
         sta CGIA::int_enable    ; enable NMI on VBL
         sta CGIA::int_status    ; ACK if any INT is pending
 
-        cli                 ; Enable IRQ interrupts
+        cli                     ; Enable IRQ interrupts
 
 _loop:  bra _loop

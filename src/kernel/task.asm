@@ -151,7 +151,7 @@ task_create_found:
 ;
 ;    user stack frame...
 ;
-nameptr =s_regsf+1          ; name pointer
+nameptr =s_regsf+1              ; name pointer
 
 ; SysCall to set Task name
 TASK_set_name:

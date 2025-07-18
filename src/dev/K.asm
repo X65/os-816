@@ -26,11 +26,11 @@ dev_K_special:
         rts
 
 dev_K_handler_tab:
-    .addr dev_K_open
-    .addr dev_K_close
-    .addr dev_K_get
-    .addr dev_K_put
-    .addr dev_K_status
-    .addr dev_K_special
-    .addr dev_K_init
-    .byte 0,0
+        .addr dev_K_open
+        .addr dev_K_close
+        .addr dev_K_get
+        .addr dev_K_put
+        .addr dev_K_status
+        .addr dev_K_special
+        .addr dev_K_init
+        .byte 0,0

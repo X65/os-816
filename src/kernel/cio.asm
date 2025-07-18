@@ -36,7 +36,7 @@ CIOCBS: .res (256 * .sizeof(CIOCB))
 .i16
 
 CIO_init:
-                                ;
+        ;
         stz CIOCBS
         ; clear CIO control blocks
         ldx #CIOCBS
@@ -66,8 +66,8 @@ CIO_init:
 ;
 ;    user stack frame...
 ;
-path    =s_regsf+1          ; buffer pointer
-device  =path+2             ; High byte - subdevice no; Low byte - device letter
+path    =s_regsf+1              ; buffer pointer
+device  =path+2                 ; High byte - subdevice no; Low byte - device letter
 
 ;
 ; OPEN CIOCB

@@ -13,27 +13,27 @@
 ;
 ;    user stack frame...
 ;
-bufptr  =s_regsf+1          ; buffer pointer
-buflen  =bufptr+2           ; buffer length
+bufptr  =s_regsf+1              ; buffer pointer
+buflen  =bufptr+2               ; buffer length
 
 ;
 ; READ from UART
 ;
 UART_read:
-        ldy #0              ; buffer index
+        ldy #0                  ; buffer index
 
-        lda buflen,s        ; get length
-        beq @read_exit      ; exit if no buffer space
+        lda buflen,s            ; get length
+        beq @read_exit          ; exit if no buffer space
 
-        tax                 ; copy counter
+        tax                     ; copy counter
 
         _a8
 @read_loop:
         bit RIA::uart_rdy
-        bvc @read_exit      ; exit if no data pending
+        bvc @read_exit          ; exit if no data pending
 
         lda RIA::uart_rxtx
-        sta (bufptr,s),y    ; store byte in buffer
+        sta (bufptr,s),y        ; store byte in buffer
         iny
         dex
         bne @read_loop
