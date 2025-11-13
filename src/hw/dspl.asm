@@ -12,9 +12,9 @@
 .segment "DISPLAY"
 .org $2000
 dspl_text_buffer:
+dspl_chargen   = dspl_text_buffer + $0800
 dspl_fg_buffer = dspl_text_buffer + $1000
 dspl_bg_buffer = dspl_fg_buffer   + $0800
-dspl_chargen   = dspl_text_buffer + $0800
 .reloc
 
 dspl_buffer_width  = 48
@@ -45,9 +45,9 @@ dspl_init:
         lda #.sizeof(CGIA) - 3
         mvn 0,0
 
+        _a8
         ; set initial buffer values
         stz dspl_text_buffer
-        _a8
         lda #text_mode_fg_color
         sta dspl_fg_buffer
         lda #text_mode_bg_color
@@ -67,8 +67,8 @@ dspl_init:
         _a16
         ; clear character memory
         ldx #dspl_text_buffer
-        ldy #dspl_text_buffer+2
-        lda #dspl_buffer_size - 3
+        ldy #dspl_text_buffer+1
+        lda #dspl_buffer_size - 2
         mvn 0,0
         ; fill foreground memory
         ldx #dspl_fg_buffer

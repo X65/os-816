@@ -150,10 +150,10 @@ COP_EXIT:
         tay                     ;now is “to” address for stack frame shift
 ;
         lda #s_regsf+s_libsf-1
-        mvp #0,#0               ; shift stack frames
+        mvp #0,#0               ;shift stack frames
 ;
-        tyx                     ; adjust...
-        txs                     ; stack pointer
+        tyx                     ;adjust...
+        txs                     ;stack pointer
 
         ldx CURRENT_TASK
         sty TCB::sp, x          ; Save SP to TCB (it is left in Y by MVP)
@@ -164,7 +164,7 @@ COP_EXIT:
         tcs                     ; Restore stack pointer
         stx CURRENT_TASK
 
-        ; unblock sheduler
+        ; unblock scheduler
         stz SYSCALL_LOCK
 
         isr_epilogue

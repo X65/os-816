@@ -22,7 +22,7 @@ kernel_start:
 
         ; ---------------------------------------------------------------------
         ; create two tasks:
-        ; - task for preemption debugging
+        ; - dummy task for preemption debugging
         ; - shell task
 
         jsr task_create         ; new task stack pointer returned in .X

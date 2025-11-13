@@ -98,24 +98,24 @@ task_create:
         cmp # TASKS_NO * .sizeof(TCB)
         bne :-
         ; no free tasks
-        pla         ; restore stack to initial
+        pla                     ; restore stack to initial
         lda #$FFFF
         rts
 .a8
 task_create_found:
-        inc TASKS+TCB::state,x  ; move task to TASK_GENESIS state
+        inc TASKS+TCB::state,x      ; move task to TASK_GENESIS state
         _a16
         txa
         asl
         asl
-        asl                 ; index is in .B
-        ora #$FF            ; set low byte to FF
-        sub #s_regsf        ; will store 13 bytes of "preempted" task stack
-        sta TASKS+TCB::sp,x ; save as stack-pointer
-        phx                 ; save TCB for later
-        pha                 ; save SP for later
+        asl                         ; index is in .B
+        ora #$FF                    ; set low byte to FF
+        sub #s_regsf                ; will store 13 bytes of "preempted" task stack
+        sta TASKS+TCB::sp,x         ; save as stack-pointer
+        phx                         ; save TCB for later
+        pha                         ; save SP for later
         stz TASKS+TCB::signals,x    ; zero signals & sigmask
-        txa                 ; now clean the rest by copying signals/sigmask
+        txa                         ; now clean the rest by copying signals/sigmask
         add #TASKS+TCB::signals
         tax
         add #2
@@ -126,23 +126,23 @@ task_create_found:
         ; now initialize the stack of "preempted" task
         ; with initial registers values and RTI address of program start
         ;
-        pla         ; restore task stack pointer address
-        tax         ; copy to .X
-        stz reg_y,x ; .Y
-        stz reg_x,x ; .X
-        stz reg_a,x ; .C
-        and #$FF00  ; mask to have start of task data in .C
-        sta reg_dp,x; .DP - direct page start
+        pla                     ; restore task stack pointer address
+        tax                     ; copy to .X
+        stz reg_y,x             ; .Y
+        stz reg_x,x             ; .X
+        stz reg_a,x             ; .C
+        and #$FF00              ; mask to have start of task data in .C
+        sta reg_dp,x            ; .DP - direct page start
         _a8
         xba
-        sta reg_db,x; .DB - data bank
-        sta reg_pb,x; .PB - program bank
-        lda #$32    ; initial status register
-        sta reg_sr,x; .SR
+        sta reg_db,x            ; .DB - data bank
+        sta reg_pb,x            ; .PB - program bank
+        lda #$32                ; initial status register
+        sta reg_sr,x            ; .SR
         _a16
-        stz reg_pc,x; .PC
+        stz reg_pc,x            ; .PC
 
-        ply         ; restore saved TCB to y
+        ply                     ; restore saved TCB to y
 
         rts
 
@@ -168,7 +168,7 @@ TASK_set_name:
         add #TCB::name          ; add name offset
         sta kstrncpy_dst
 
-        ldx #TASK_NAME_LEN
+        lda #TASK_NAME_LEN
         jsr kstrncpy
 
         jmp sys_success

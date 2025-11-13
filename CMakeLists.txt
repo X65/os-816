@@ -9,7 +9,11 @@ set(executable_name ${CMAKE_PROJECT_NAME})
 add_executable(${executable_name})
 target_compile_options(${executable_name} PUBLIC
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
-    -Wa --cpu,65816,-I,${CMAKE_SOURCE_DIR}/src
+    --cpu 65816
+    --asm-include-dir ${CMAKE_SOURCE_DIR}/src
+)
+target_include_directories(${executable_name} PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
 )
 target_link_options(${executable_name} PUBLIC
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
