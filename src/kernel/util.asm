@@ -10,19 +10,26 @@ kstrncpy_dst: .res 3
 .code
 .a16
 .i16
-; set kstrncpy_src and kstrncpy_dst before call
-; .x - copy max n chars
-kstrncpy:
+
+;
+; Copy `.X` non-null bytes from `kstrncpy_src` to `kstrncpy_dst`.
+;
+; @param {register} .A         - copy max n chars
+; @param {global} kstrncpy_src - source far-address (24bit)
+; @param {global} kstrncpy_dst - destination far-address (24bit)
+; @modifies .A, .X, .Y
+;
+.proc kstrncpy
         ldy #0
-        txa
-        beq :+
+        tax
+        beq exit
         _a8
-kstrncpy_loop:
-        lda [kstrncpy_src],y
+loop:   lda [kstrncpy_src],y
         sta [kstrncpy_dst],y
-        beq :+
+        beq exit
         iny
         dex
-        bne kstrncpy_loop
-:       _a16
+        bne loop
+exit:   _a16
         rts
+.endproc

@@ -2,5 +2,8 @@
   "debug.confirmOnExit": "never",
   "memory-view.trackDebuggers": ["cc65-dbg"],
   "memory-view.tracking.closeHexEditorAfterDuplicating": false,
-  "memory-view.tracking.duplicateDebuggerMemoryViewsSilently": true
+  "memory-view.tracking.duplicateDebuggerMemoryViewsSilently": true,
+  "cSpell.words": [
+    "kstrncpy"
+  ]
 }
