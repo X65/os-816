@@ -31,13 +31,14 @@ data dspl_display_list {
 segment CODE
 func dspl_init @a16 @i16 {
     // initialize CGIA
-    stz CGIA.mode
-    stz CGIA.planes
+    stz CGIA.planes // shut off all planes
     // clear all CGIA registers
-    ldx #CGIA.mode
-    ldy #CGIA.mode+2
-    lda #CGIA:sizeof - 3
-    mvn 0,0
+    ldx #CGIA:sizeof - 2
+    loop {
+        stz CGIA,x
+        dex
+        dex
+    } while >=0
 
     @a8 {
         // set initial buffer values
@@ -47,6 +48,10 @@ func dspl_init @a16 @i16 {
         lda #text_mode_bg_color
         sta dspl_bg_buffer
 
+        // drop anything left on XSTACK
+        lda #RIA_API_ZXSTACK
+        sta RIA.op
+
         // fetch character generator from RIA firmware
         phb
         pla
@@ -55,6 +60,8 @@ func dspl_init @a16 @i16 {
         sta RIA.stack
         lda #&<dspl_chargen     // low byte
         sta RIA.stack
+        stz RIA.stack           // code page high byte
+        stz RIA.stack           // code page low byte (0 = default font)
         lda #RIA_API_GET_CHARGEN
         sta RIA.op
     }
@@ -81,6 +88,10 @@ func dspl_init @a16 @i16 {
         // set row height to 8 pixels
         lda #7
         sta CGIA.plane0+CGIA_PLANE_FG.row_height:offsetof
+
+        // do not wait for character generator transfer to complete
+        // it should be done when we actually start puting anything on screen
+
         // and finally enable the plane
         lda #%00000001
         sta CGIA.planes
