@@ -26,7 +26,7 @@ endmacro()
 __compilerCc65( C )
 __compilerCc65( ASM )
 
-set( CMAKE_ASM_SOURCE_FILE_EXTENSIONS s;asm )
+set( CMAKE_ASM_SOURCE_FILE_EXTENSIONS s;asm;k65;k816;kk )
 
 # Not sure why CMake by default looks for the compilers, but not the archiver.
 # Force it to try to find the archiver.
