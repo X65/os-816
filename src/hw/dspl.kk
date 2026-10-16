@@ -87,7 +87,10 @@ func dspl_init @a16 @i16 {
     @a8 {
         // set row height to 8 pixels
         lda #7
-        sta CGIA.plane0+CGIA_PLANE_FG.row_height:offsetof
+        sta CGIA.plane0+CGIA_PLANE_BCKGND.row_height:offsetof
+        // match border to text background
+        lda #text_mode_bg_color
+        sta CGIA.back_color
 
         // do not wait for character generator transfer to complete
         // it should be done when we actually start puting anything on screen
