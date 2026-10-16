@@ -1,0 +1,2 @@
+# K816 sources - GitHub Linguist would otherwise detect .kk as Koka
+*.kk linguist-language=Assembly
