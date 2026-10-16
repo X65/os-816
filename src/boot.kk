@@ -6,10 +6,16 @@ data {
     "OS/816 - Operating System for X65 microcomputer" 0
 }
 
-segment VECTORS
+// Native: COP BRK ABORT NMI [IRQ_ctrl] IRQ
+segment VECTORS_N
 data {
-    word 0 0 NOP_ISR STOP_ISR NOP_ISR NOP_ISR 0 NOP_ISR
-    word 0 0 NOP_ISR 0 NOP_ISR NOP_ISR RESET_HDL NOP_ISR
+    word NOP_ISR STOP_ISR NOP_ISR NOP_ISR 0 NOP_ISR
+}
+
+// Emulation: COP [EXTIO/EXTMEM] ABORT NMI RESET IRQ/BRK
+segment VECTORS_E
+data {
+    word NOP_ISR 0 NOP_ISR NOP_ISR RESET_HDL NOP_ISR
 }
 
 segment STARTUP
