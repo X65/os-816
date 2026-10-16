@@ -7,14 +7,15 @@ import "cgia.kk"
 import "ria.kk"
 import "../macros.kk"
 
-var dspl_text_buffer = $2000
-var dspl_chargen   = dspl_text_buffer + $0800
-var dspl_fg_buffer = dspl_text_buffer + $1000
-var dspl_bg_buffer = dspl_fg_buffer + $0800
-
 const dspl_buffer_width  = 48
 const dspl_buffer_height = 30
 const dspl_buffer_size   = dspl_buffer_width * dspl_buffer_height
+
+segment DISPLAY
+var dspl_text_buffer[$0800]
+var dspl_chargen[$0800]
+var dspl_fg_buffer[$0800]
+var dspl_bg_buffer[$0800]
 
 segment RODATA
 data dspl_display_list {
