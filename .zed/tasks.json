@@ -1,0 +1,17 @@
+[
+  {
+    "label": "CMake: configure",
+    "command": "cmake",
+    "args": ["-S", ".", "-B", "build", "-G", "Ninja"]
+  },
+  {
+    "label": "CMake: build",
+    "command": "cmake",
+    "args": ["--build", "build", "-j"]
+  },
+  {
+    "label": "CMake: clean",
+    "command": "cmake",
+    "args": ["--build", "build", "--target", "clean"]
+  }
+]
