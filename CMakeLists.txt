@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16.3)
+cmake_minimum_required(VERSION 3.20)
 
 #Note this line must be before project!
 set(CMAKE_TOOLCHAIN_FILE ./cc65-toolchain.cmake)
@@ -7,7 +7,10 @@ project(os-816 ASM)
 set(executable_name ${CMAKE_PROJECT_NAME})
 
 add_executable(${executable_name})
+# --target none selects the plain charmap - cl65 defaults to the c64 target
+# (PETSCII), so this has to hold for every build type, not just Debug.
 target_compile_options(${executable_name} PUBLIC
+    --target none
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
     --cpu 65816
     --asm-include-dir ${CMAKE_SOURCE_DIR}/src
@@ -16,6 +19,7 @@ target_include_directories(${executable_name} PUBLIC
     ${CMAKE_SOURCE_DIR}/src
 )
 target_link_options(${executable_name} PUBLIC
+    --target none
     -C ${CMAKE_SOURCE_DIR}/memory.cfg
     -Ln ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.lbl
     --mapfile ${CMAKE_CURRENT_BINARY_DIR}/${executable_name}.map
